@@ -58,6 +58,10 @@ $MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatoperator SET vcpassword=\
 # change theme
 $MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatconfig SET vcvalue=\"simplicity\" WHERE vckey=\"chatstyle\";"
 
+# secure sensitive files
+chown www-data:www-data $WEBROOT/libs/config.php
+chmod 640 $WEBROOT/libs/config.php
+
 # stop services
 /etc/init.d/mysql stop
 /etc/init.d/apache2 stop
