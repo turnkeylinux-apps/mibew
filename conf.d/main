@@ -17,6 +17,14 @@ rm $SRC/mibew*.zip
 chown -R root:root $WEBROOT
 chown -R www-data:www-data $WEBROOT/images/avatar
 
+# setup tkl-webcp
+mkdir -p $WEBROOT/cp
+mv /var/www/index.php $WEBROOT/cp
+mv /var/www/js $WEBROOT/cp
+mv /var/www/css $WEBROOT/cp
+mv /var/www/images $WEBROOT/cp
+ln -s $WEBROOT/cp $WEBROOT/test
+
 # configure apache
 a2dissite default
 a2ensite mibew
