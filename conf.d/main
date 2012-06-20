@@ -10,3 +10,10 @@ ADMIN_PASS=turnkey
 SRC=/usr/local/src
 WEBROOT=/var/www/mibew
 
+# unpack and set permissions
+mkdir -p $WEBROOT
+unzip $SRC/mibew*.zip -d $WEBROOT
+rm $SRC/mibew*.zip
+chown -R root:root $WEBROOT
+chown -R www-data:www-data $WEBROOT/images/avatar
+
