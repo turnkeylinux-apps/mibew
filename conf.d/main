@@ -51,6 +51,10 @@ $CURL "${URL}/index.php"
 rm -f /tmp/cookie
 rm -rf $WEBROOT/install
 
+# set default password
+MD5_PASS=$(echo -n $ADMIN_PASS | md5sum | cut -d " " -f 1)
+$MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatoperator SET vcpassword=\"$MD5_PASS\" WHERE vclogin=\"$ADMIN_NAME\";"
+
 # stop services
 /etc/init.d/mysql stop
 /etc/init.d/apache2 stop
