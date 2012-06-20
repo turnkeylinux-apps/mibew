@@ -17,3 +17,8 @@ rm $SRC/mibew*.zip
 chown -R root:root $WEBROOT
 chown -R www-data:www-data $WEBROOT/images/avatar
 
+# configure apache
+a2dissite default
+a2ensite mibew
+a2enmod rewrite
+
