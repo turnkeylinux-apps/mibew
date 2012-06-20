@@ -22,3 +22,23 @@ a2dissite default
 a2ensite mibew
 a2enmod rewrite
 
+# start services
+/etc/init.d/mysql start
+
+# setup the database
+MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
+MYSQL_ADMIN="mysqladmin --user=root --password=$MYSQL_PASS"
+
+$MYSQL_ADMIN create $DB_NAME
+$MYSQL_BATCH --execute "grant all privileges on $DB_NAME.* to $DB_USER@localhost identified by '$DB_PASS'; flush privileges;"
+
+# preseed configuration
+CONF=$WEBROOT/libs/config.php
+sed -i "s|webimroot.*|webimroot = \"\";|" $CONF
+sed -i "s|mysqldb.*|mysqldb = \"$DB_NAME\";|" $CONF
+sed -i "s|mysqllogin.*|mysqllogin = \"$DB_USER\";|" $CONF
+sed -i "s|mysqlpass.*|mysqlpass = \"$DB_PASS\";|" $CONF
+
+# stop services
+/etc/init.d/mysql stop
+
