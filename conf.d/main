@@ -24,6 +24,7 @@ a2enmod rewrite
 
 # start services
 /etc/init.d/mysql start
+/etc/init.d/apache2 start
 
 # setup the database
 MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
@@ -39,6 +40,18 @@ sed -i "s|mysqldb.*|mysqldb = \"$DB_NAME\";|" $CONF
 sed -i "s|mysqllogin.*|mysqllogin = \"$DB_USER\";|" $CONF
 sed -i "s|mysqlpass.*|mysqlpass = \"$DB_PASS\";|" $CONF
 
+# curl based install
+URL="http://127.0.0.1/install"
+CURL="curl -c /tmp/cookie -b /tmp/cookie"
+
+$CURL "${URL}/index.php"
+$CURL "${URL}/dbperform.php?act=ct"
+$CURL "${URL}/index.php"
+
+rm -f /tmp/cookie
+rm -rf $WEBROOT/install
+
 # stop services
 /etc/init.d/mysql stop
+/etc/init.d/apache2 stop
 
