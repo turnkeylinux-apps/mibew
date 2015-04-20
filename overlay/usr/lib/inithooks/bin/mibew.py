@@ -12,6 +12,7 @@ import hashlib
 
 from dialog_wrapper import Dialog
 from mysqlconf import MySQL
+from bcrypt import hashpw, gensalt
 
 def usage(s=None):
     if s:
@@ -41,7 +42,7 @@ def main():
             "Mibew Password",
             "Enter new password for the Mibew 'admin' account.")
 
-    hash = hashlib.md5(password).hexdigest()
+    hash = hashpw(password, saltgen()).replace('$2y$', '$2a$')
 
     m = MySQL()
     m.execute('UPDATE mibew.chatoperator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
