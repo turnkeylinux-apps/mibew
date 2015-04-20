@@ -90,3 +90,5 @@ chmod 640 $WEBROOT/configs/config.yml
 
 # install b-crypt python module (for setting admin password in inithooks)
 pip install bcrypt
+
+apt-get remove libffi-dev python-dev gcc

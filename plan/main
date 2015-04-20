@@ -8,3 +8,6 @@ php5-curl
 unzip
 
 python-pip
+gcc
+libffi-dev
+python-dev
