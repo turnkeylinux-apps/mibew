@@ -56,11 +56,6 @@ sed -i "0,/pass: \".*/s//pass: \"$DB_PASS\"/" $CONF
 URL="http://127.0.0.1/install"
 CURL="curl -c /tmp/cookie -b /tmp/cookie"
 
-
-#$CURL "${URL}/index.php"
-#$CURL "${URL}/dbperform.php?act=ct"
-#$CURL "${URL}/index.php"
-
 $CURL "${URL}"
 $CURL "${URL}/check-requirements"
 $CURL "${URL}/check-connection"
@@ -73,13 +68,6 @@ $CURL "${URL}/done"
 rm -f /tmp/cookie
 rm -rf $WEBROOT/install
 
-# set default password
-#MD5_PASS=$(echo -n $ADMIN_PASS | md5sum | cut -d " " -f 1)
-#$MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatoperator SET vcpassword=\"$MD5_PASS\" WHERE vclogin=\"$ADMIN_NAME\";"
-
-# change theme
-#$MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatconfig SET vcvalue=\"simplicity\" WHERE vckey=\"chatstyle\";"
-
 # secure sensitive files
 chown www-data:www-data $WEBROOT/configs/config.yml
 chmod 640 $WEBROOT/configs/config.yml
@@ -87,8 +75,3 @@ chmod 640 $WEBROOT/configs/config.yml
 # stop services
 /etc/init.d/mysql stop
 /etc/init.d/apache2 stop
-
-# install b-crypt python module (for setting admin password in inithooks)
-pip install bcrypt
-
-apt-get remove libffi-dev python-dev gcc

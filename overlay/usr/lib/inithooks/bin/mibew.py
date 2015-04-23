@@ -9,10 +9,10 @@ Option:
 import sys
 import getopt
 import hashlib
+import subprocess
 
 from dialog_wrapper import Dialog
 from mysqlconf import MySQL
-from bcrypt import hashpw, gensalt
 
 def usage(s=None):
     if s:
@@ -42,10 +42,11 @@ def main():
             "Mibew Password",
             "Enter new password for the Mibew 'admin' account.")
 
-    hash = hashpw(password, saltgen()).replace('$2y$', '$2a$')
+    php = subprocess.Popen("php /usr/lib/inithooks/bin/changepass.php %s" % password, shell=True, stdout=subprocess.PIPE)
+    hash = php.stdout.read()
 
     m = MySQL()
-    m.execute('UPDATE mibew.chatoperator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
+    m.execute('UPDATE mibew.operator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
 
 
 if __name__ == "__main__":
