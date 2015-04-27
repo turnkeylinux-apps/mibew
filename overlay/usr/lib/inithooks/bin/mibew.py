@@ -45,6 +45,9 @@ def main():
     php = subprocess.Popen("php /usr/lib/inithooks/bin/changepass.php %s" % password, shell=True, stdout=subprocess.PIPE)
     hash = php.stdout.read()
 
+    with open('/usr/lib/inithooks/bin/log', 'wb') as fob:
+	fob.write(hash)
+
     m = MySQL()
     m.execute('UPDATE mibew.operator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
 

@@ -64,6 +64,7 @@ $CURL "${URL}/set-password"
 $CURL --data "password=$ADMIN_PASS&password_confirm=$ADMIN_PASS&submit=Save" "${URL}/set-password"
 $CURL "${URL}/import-locales"
 $CURL "${URL}/done"
+$CURL "http://127.0.0.1/operator/logout"
 
 rm -f /tmp/cookie
 rm -rf $WEBROOT/install
