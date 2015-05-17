@@ -9,6 +9,7 @@ Option:
 import sys
 import getopt
 import hashlib
+import subprocess
 
 from dialog_wrapper import Dialog
 from mysqlconf import MySQL
@@ -41,10 +42,14 @@ def main():
             "Mibew Password",
             "Enter new password for the Mibew 'admin' account.")
 
-    hash = hashlib.md5(password).hexdigest()
+    php = subprocess.Popen("php /usr/lib/inithooks/bin/changepass.php %s" % password, shell=True, stdout=subprocess.PIPE)
+    hash = php.stdout.read()
+
+    with open('/usr/lib/inithooks/bin/log', 'wb') as fob:
+	fob.write(hash)
 
     m = MySQL()
-    m.execute('UPDATE mibew.chatoperator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
+    m.execute('UPDATE mibew.operator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,8 @@ mkdir -p $WEBROOT
 unzip $SRC/mibew*.zip -d $WEBROOT
 rm $SRC/mibew*.zip
 chown -R root:root $WEBROOT
-chown -R www-data:www-data $WEBROOT/images/avatar
+chown -R www-data:www-data $WEBROOT/files/avatar
+chown -R www-data:www-data $WEBROOT/cache
 
 # setup tkl-webcp
 mkdir -p $WEBROOT/cp
@@ -41,36 +42,37 @@ MYSQL_ADMIN="mysqladmin --user=root --password=$MYSQL_PASS"
 $MYSQL_ADMIN create $DB_NAME
 $MYSQL_BATCH --execute "grant all privileges on $DB_NAME.* to $DB_USER@localhost identified by '$DB_PASS'; flush privileges;"
 
+cp $WEBROOT/configs/default_config.yml $WEBROOT/configs/config.yml
+
 # preseed configuration
-CONF=$WEBROOT/libs/config.php
-sed -i "s|webimroot.*|webimroot = \"\";|" $CONF
-sed -i "s|mysqldb.*|mysqldb = \"$DB_NAME\";|" $CONF
-sed -i "s|mysqllogin.*|mysqllogin = \"$DB_USER\";|" $CONF
-sed -i "s|mysqlpass.*|mysqlpass = \"$DB_PASS\";|" $CONF
+CONF=$WEBROOT/configs/config.yml
+
+sed -i "0,/host: \".*/s//host: \"localhost\"/" $CONF
+sed -i "0,/db: \".*/s//db: \"$DB_NAME\"/" $CONF
+sed -i "0,/login: \".*/s//login: \"$DB_USER\"/" $CONF
+sed -i "0,/pass: \".*/s//pass: \"$DB_PASS\"/" $CONF
 
 # curl based install
 URL="http://127.0.0.1/install"
 CURL="curl -c /tmp/cookie -b /tmp/cookie"
 
-$CURL "${URL}/index.php"
-$CURL "${URL}/dbperform.php?act=ct"
-$CURL "${URL}/index.php"
+$CURL "${URL}"
+$CURL "${URL}/check-requirements"
+$CURL "${URL}/check-connection"
+$CURL "${URL}/create-tables"
+$CURL "${URL}/set-password"
+$CURL --data "password=$ADMIN_PASS&password_confirm=$ADMIN_PASS&submit=Save" "${URL}/set-password"
+$CURL "${URL}/import-locales"
+$CURL "${URL}/done"
+$CURL "http://127.0.0.1/operator/logout"
 
 rm -f /tmp/cookie
 rm -rf $WEBROOT/install
 
-# set default password
-MD5_PASS=$(echo -n $ADMIN_PASS | md5sum | cut -d " " -f 1)
-$MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatoperator SET vcpassword=\"$MD5_PASS\" WHERE vclogin=\"$ADMIN_NAME\";"
-
-# change theme
-$MYSQL_BATCH --database=$DB_NAME --execute "UPDATE chatconfig SET vcvalue=\"simplicity\" WHERE vckey=\"chatstyle\";"
-
 # secure sensitive files
-chown www-data:www-data $WEBROOT/libs/config.php
-chmod 640 $WEBROOT/libs/config.php
+chown www-data:www-data $WEBROOT/configs/config.yml
+chmod 640 $WEBROOT/configs/config.yml
 
 # stop services
 /etc/init.d/mysql stop
 /etc/init.d/apache2 stop
-
