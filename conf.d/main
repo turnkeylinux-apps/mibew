@@ -27,7 +27,7 @@ mv /var/www/images $WEBROOT/cp
 ln -s $WEBROOT/cp $WEBROOT/test
 
 # configure apache
-a2dissite default
+a2dissite 000-default
 a2ensite mibew
 a2enmod rewrite
 
