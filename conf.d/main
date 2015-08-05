@@ -73,6 +73,10 @@ rm -rf $WEBROOT/install
 chown www-data:www-data $WEBROOT/configs/config.yml
 chmod 640 $WEBROOT/configs/config.yml
 
+# remove unrequired webcp icons (all except those named)
+cd /var/www/images
+find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
+
 # stop services
 /etc/init.d/mysql stop
 /etc/init.d/apache2 stop
