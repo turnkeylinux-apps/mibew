@@ -18,6 +18,10 @@ chown -R root:root $WEBROOT
 chown -R www-data:www-data $WEBROOT/files/avatar
 chown -R www-data:www-data $WEBROOT/cache
 
+# remove unrequired webcp icons (all except those named)
+cd /var/www/images
+find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
+
 # setup tkl-webcp
 mkdir -p $WEBROOT/cp
 mv /var/www/index.php $WEBROOT/cp

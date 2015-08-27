@@ -51,7 +51,7 @@
                     <div>
                         <a href="https://<?php print
                         $_SERVER{'HTTP_HOST'}; ?>:12322"><img
-                        src="images/phpmyadmin.png"/>PHPMyAdmin</a>
+                        src="images/adminer.png"/>Adminer</a>
                     </div>
                     <div></div>
                     <div></div>
