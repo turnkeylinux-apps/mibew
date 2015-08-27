@@ -71,7 +71,7 @@ $CURL "${URL}/done"
 $CURL "http://127.0.0.1/operator/logout"
 
 rm -f /tmp/cookie
-rm -rf $WEBROOT/install
+rm -rf $WEBROOT/install.php
 
 # secure sensitive files
 chown www-data:www-data $WEBROOT/configs/config.yml

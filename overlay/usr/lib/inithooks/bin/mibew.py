@@ -6,10 +6,10 @@ Option:
 
 """
 
+import os
 import sys
 import getopt
-import hashlib
-import subprocess
+from subprocess import Popen, PIPE, STDOUT
 
 from dialog_wrapper import Dialog
 from mysqlconf import MySQL
@@ -42,15 +42,17 @@ def main():
             "Mibew Password",
             "Enter new password for the Mibew 'admin' account.")
 
-    php = subprocess.Popen("php /usr/lib/inithooks/bin/changepass.php %s" % password, shell=True, stdout=subprocess.PIPE)
-    hash = php.stdout.read()
+    script = '''
+        $admin = operator_by_login('admin');
+        $admin['vcpassword'] = calculate_password_hash('admin', '%s');
+        update_operator($admin);
+    '''
 
-    with open('/usr/lib/inithooks/bin/log', 'wb') as fob:
-	fob.write(hash)
-
-    m = MySQL()
-    m.execute('UPDATE mibew.operator SET vcpassword=\"%s\" WHERE vclogin=\"admin\";' % hash)
-
+    DEVNULL = open(os.devnull, 'w')
+    sub = Popen(['phpsh', '/var/www/mibew/index.php'], stdin = PIPE, stdout = DEVNULL, stderr = STDOUT)
+    sub.communicate(script % password)
+    sub.wait()
+    DEVNULL.close()
 
 if __name__ == "__main__":
     main()
