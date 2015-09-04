@@ -1,3 +1,16 @@
+turnkey-mibew-14.0 (1) turnkey; urgency=low
+
+  * Update Mibew from latest upstream (2.1.0)
+
+  * Replaced PHPMyAdmin with Adminer
+
+  * Hardened default SSL settings
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Fri, 04 Sep 2015 16:27:32 +1000
+
 turnkey-mibew-13.0 (1) turnkey; urgency=low
 
   * PHPMyAdmin:

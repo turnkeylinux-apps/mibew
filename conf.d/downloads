@@ -5,9 +5,7 @@ dl() {
     [ "$FAB_HTTP_PROXY" ] && PROXY="--proxy $FAB_HTTP_PROXY"
     cd $2; curl -L -f -O $PROXY $1; cd -
 }
-
-VERSION="2.0.0/mibew-2.0.0.zip"
-URL="http://sourceforge.net/projects/mibew/files/core/$VERSION"
+VERSION="2.1.0"
+URL="http://downloads.sourceforge.net/project/mibew/core/${VERSION}/mibew-${VERSION}.zip"
 
 dl $URL /usr/local/src
-
