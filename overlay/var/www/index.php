@@ -66,7 +66,7 @@
                     <h2>Resources and references</h2>
                     <ul>
                         <li><p><a href="http://mibew.org">Official Mibew messenger website</a></p></li>
-                        <li><p><a href="http://www.turnkeylinux.org/mibew">TurnKey Mibew release notes</a></p></li>
+                        <li><p><a href="https://www.turnkeylinux.org/mibew">TurnKey Mibew release notes</a></p></li>
                     </ul>
                 </div>
             </div>
