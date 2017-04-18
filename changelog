@@ -1,3 +1,14 @@
+turnkey-mibew-14.2 (1) turnkey; urgency=low
+
+  * Updated Mibew from latest upstream (2.2.0)
+
+  * Updated Adminer to 4.2.5
+
+  * Note: Please refer to turnkey-core's changelog for changes comon to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Stefan Davis <stefan@turnkeylinux.org>  Thu, 16 Mar 2017 00:40:29 +1100
+
 turnkey-mibew-14.1 (1) turnkey; urgency=low
 
   * Installed security updates.
