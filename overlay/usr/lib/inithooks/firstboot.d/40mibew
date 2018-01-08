@@ -4,5 +4,5 @@
 . /etc/default/inithooks
 
 [ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
-$INITHOOKS_PATH/bin/mibew.py --pass="$APP_PASS"
+HOME=/root $INITHOOKS_PATH/bin/mibew.py --pass="$APP_PASS"
 

@@ -1,3 +1,16 @@
+turnkey-mibew-15.0 (1) turnkey; urgency=low
+
+  * Updated Mibew from latest upstream (2.3.0)
+
+  * Install Adminer directly from stretch/main repo
+
+  * Replace MySQL with MariaDB
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Stefan Davis <stefan@turnkeylinux.org>  Sun, 26 Nov 2017 23:15:17 +1100
+
 turnkey-mibew-14.2 (1) turnkey; urgency=low
 
   * Updated Mibew from latest upstream (2.2.0)
@@ -6,7 +19,7 @@ turnkey-mibew-14.2 (1) turnkey; urgency=low
 
   * Installed security updates.
 
-  * Note: Please refer to turnkey-core's changelog for changes comon to all
+  * Note: Please refer to turnkey-core's changelog for changes common to all
     appliances. Here we only describe changes specific to this appliance.
 
  -- Stefan Davis <stefan@turnkeylinux.org>  Thu, 16 Mar 2017 00:40:29 +1100
