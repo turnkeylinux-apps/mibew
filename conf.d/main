@@ -17,6 +17,7 @@ rm $SRC/mibew*.zip
 chown -R root:root $WEBROOT
 chown -R www-data:www-data $WEBROOT/files/avatar
 chown -R www-data:www-data $WEBROOT/cache
+chmod +x /usr/lib/inithooks/bin/eddit_mibew_pass.sh 
 
 # remove unrequired webcp icons (all except those named)
 cd /var/www/images
