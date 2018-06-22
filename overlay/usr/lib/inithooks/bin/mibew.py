@@ -9,7 +9,7 @@ Option:
 import os
 import sys
 import getopt
-from subprocess import Popen, PIPE, STDOUT
+from executil import system
 
 from dialog_wrapper import Dialog
 from mysqlconf import MySQL
@@ -42,17 +42,7 @@ def main():
             "Mibew Password",
             "Enter new password for the Mibew 'admin' account.")
 
-    script = '''
-        $admin = operator_by_login('admin');
-        $admin['vcpassword'] = calculate_password_hash('admin', '%s');
-        update_operator($admin);
-    '''
-
-    DEVNULL = open(os.devnull, 'w')
-    sub = Popen(['phpsh', '/var/www/mibew/index.php'], stdin = PIPE, stdout = DEVNULL, stderr = STDOUT)
-    sub.communicate(script % password)
-    sub.wait()
-    DEVNULL.close()
+    system('/usr/lib/inithooks/bin/eddit_mibew_pass.sh -p {PASSWORD} '.format(PASSWORD = password))
 
 if __name__ == "__main__":
     main()
