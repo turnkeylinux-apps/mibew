@@ -15,6 +15,10 @@ and on top of that:
    - Includes TurnKey Web Control panel with embedded chat button for
      testing, and links to useful references (convenience).
 
+     **Security note**: Updates to Mibew may require supervision so
+     they **ARE NOT** configured to install automatically. See `Mibew
+     documentation`_ for upgrading.
+
 - SSL support out of the box.
 - `Adminer`_ administration frontend for MySQL (listening on port
   12322 - uses SSL).
@@ -30,6 +34,7 @@ Credentials *(passwords set at first boot)*
 -  Mibew: username **admin**
 
 
-.. _Mibew Messenger: http://mibew.org/
+.. _Mibew Messenger: https://mibew.org/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
-.. _Adminer: http://www.adminer.org/
+.. _Mibew documentation: https://docs.mibew.org/installation-and-update.html
+.. _Adminer: https://www.adminer.org/
