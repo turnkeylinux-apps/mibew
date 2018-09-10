@@ -12,8 +12,9 @@ and on top of that:
 - Mibew configurations:
    
    - Installed from upstream source code to /var/www/mibew.
-   - Includes TurnKey Web Control panel with embedded chat button for
-     testing, and links to useful references (convenience).
+   - Includes TurnKey Web Control panel (`http://YOUR_SERVER/cp`) with
+     embedded chat button for testing, and links to useful references
+     (convenience).
 
      **Security note**: Updates to Mibew may require supervision so
      they **ARE NOT** configured to install automatically. See `Mibew
