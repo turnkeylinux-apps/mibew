@@ -1,3 +1,12 @@
+turnkey-mibew-15.1 (1) turnkey; urgency=low
+
+  * Updated Mibew from latest upstream (3.2.1).
+
+  * Rebuild to resolve inadvertent removal of mariadb during sec-updates
+    - part of #1246.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Thu, 22 Nov 2018 13:50:53 +1100
+
 turnkey-mibew-15.0 (1) turnkey; urgency=low
 
   * Updated Mibew from latest upstream (3.1.3)
