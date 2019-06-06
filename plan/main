@@ -1,11 +1,11 @@
 #include <turnkey/base>
-#include <turnkey/lamp72>
+#include <turnkey/lamp>
 
 links
 
-php7.2-gd
-php7.2-cli
-php7.2-curl
-php7.2-mbstring
+php-gd
+php-cli
+php-curl
+php-mbstring
 
 unzip

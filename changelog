@@ -2,8 +2,6 @@ turnkey-mibew-15.2 (1) turnkey; urgency=low
 
   * Updated Mibew to latest upstream (3.2.4).
 
-  * Includes PHP7.2 (installed from sury).
-
  -- Stefan Davis <stefan@turnkeylinux.org>  Thu, 06 Jun 2019 04:16:50 +0000
 
 turnkey-mibew-15.1 (1) turnkey; urgency=low
