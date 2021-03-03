@@ -1,3 +1,12 @@
+turnkey-mibew-16.2 (1) turnkey; urgency=low
+
+  * Updated Mibew to latest upstream - 3.2.8.
+ 
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+ 
+ -- Stefan Davis <stefan@turnkeylinux>  Tue, 02 Mar 2021 19:18:41 +1100
+
 turnkey-mibew-16.1 (1) turnkey; urgency=low
 
   * Update Mibew to lastest upstream - 3.2.7.
