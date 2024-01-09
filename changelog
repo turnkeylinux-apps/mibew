@@ -1,3 +1,9 @@
+turnkey-mibew-18.0 (1) turnkey; urgency=low
+
+  * Updated Mibew to latest upstream - 3.6.0.
+
+ -- Stefan Davis <stefan@turnkeylinux.org>  Tue, 09 Jan 2024 23:18:55 +0000
+
 turnkey-mibew-17.1 (1) turnkey; urgency=low
 
   * Updated all Debian packages to latest.
