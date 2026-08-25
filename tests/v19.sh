@@ -42,18 +42,23 @@ curl --insecure --fail --silent --show-error \
     --cookie "$operator_cookie" "$base/operator" >"$page"
 grep -Fq 'Visitors' "$page"
 grep -Fq '/operator/logout' "$page"
+curl --insecure --fail --silent --show-error \
+    --cookie "$operator_cookie" "$base/operator/users" >"$page"
+grep -Fq 'Visitors' "$page"
 
 package=$(php -r '
 $call = [
     "token" => "turnkey-v19",
     "functions" => [[
-        "function" => "processLeaveMessage",
+        "function" => "processSurvey",
         "arguments" => [
-            "references" => [], "return" => [], "groupId" => 0,
+            "references" => [],
+            "return" => ["next" => "next", "options" => "options"],
+            "groupId" => 0,
             "name" => "TurnKey Visitor", "info" => null,
             "email" => "visitor@example.invalid",
-            "message" => "TurnKey v19 support request",
-            "referrer" => "https://example.invalid/", "captcha" => "",
+            "message" => "TurnKey v19 visitor message",
+            "referrer" => "https://example.invalid/",
             "threadId" => null, "token" => null,
         ],
     ]],
@@ -63,26 +68,87 @@ echo json_encode(["signature" => "", "proto" => "1.0", "async" => true, "request
 curl --insecure --fail --silent --show-error \
     --cookie "$visitor_cookie" --cookie-jar "$visitor_cookie" \
     --data-urlencode "data=$package" "$base/thread/update" >"$response"
-php -r '
+read -r thread_id thread_token < <(php -r '
 $payload = json_decode(urldecode(file_get_contents($argv[1])), true);
 if (!is_array($payload)) { exit(1); }
 $functions = $payload["requests"][0]["functions"] ?? [];
 foreach ($functions as $function) {
-    if (($function["function"] ?? "") === "result"
-        && ($function["arguments"]["errorCode"] ?? -1) === 0) { exit(0); }
+    if (($function["function"] ?? "") !== "result") { continue; }
+    $args = $function["arguments"] ?? [];
+    $thread = $args["options"]["thread"] ?? [];
+    if (($args["errorCode"] ?? -1) === 0
+        && ($args["next"] ?? "") === "chat"
+        && isset($thread["id"], $thread["token"])) {
+        echo $thread["id"], " ", $thread["token"], "\n";
+        exit(0);
+    }
 }
 exit(1);
+' "$response")
+test -n "$thread_id"
+test -n "$thread_token"
+
+curl --insecure --silent --show-error \
+    --cookie "$operator_cookie" --dump-header "$headers" --output "$page" \
+    "$base/operator/chat/$thread_id"
+grep -q '^HTTP/.* 302' "$headers"
+
+package=$(php -r '
+$call = [
+    "token" => "turnkey-v19",
+    "functions" => [[
+        "function" => "post",
+        "arguments" => [
+            "references" => [], "return" => [],
+            "threadId" => (int)$argv[1], "token" => (int)$argv[2],
+            "user" => false, "message" => "TurnKey v19 operator response",
+        ],
+    ]],
+];
+echo json_encode(["signature" => "", "proto" => "1.0", "async" => true, "requests" => [$call]]);
+' "$thread_id" "$thread_token")
+curl --insecure --fail --silent --show-error \
+    --cookie "$operator_cookie" --data-urlencode "data=$package" \
+    "$base/thread/update" >"$response"
+php -r '
+$payload = json_decode(urldecode(file_get_contents($argv[1])), true);
+$args = $payload["requests"][0]["functions"][0]["arguments"] ?? [];
+exit(($args["errorCode"] ?? -1) === 0 ? 0 : 1);
 ' "$response"
 
-thread_id=$(mariadb --batch --skip-column-names mibew --execute \
-    "SELECT threadid FROM thread WHERE username='TurnKey Visitor' ORDER BY threadid DESC LIMIT 1")
-test -n "$thread_id"
+package=$(php -r '
+$call = [
+    "token" => "turnkey-v19",
+    "functions" => [[
+        "function" => "updateMessages",
+        "arguments" => [
+            "references" => [], "return" => ["messages" => "messages"],
+            "threadId" => (int)$argv[1], "token" => (int)$argv[2],
+            "user" => true, "lastId" => 0,
+        ],
+    ]],
+];
+echo json_encode(["signature" => "", "proto" => "1.0", "async" => true, "requests" => [$call]]);
+' "$thread_id" "$thread_token")
+curl --insecure --fail --silent --show-error \
+    --cookie "$visitor_cookie" --cookie-jar "$visitor_cookie" \
+    --data-urlencode "data=$package" "$base/thread/update" >"$response"
+php -r '
+$payload = json_decode(urldecode(file_get_contents($argv[1])), true);
+$args = $payload["requests"][0]["functions"][0]["arguments"] ?? [];
+if (($args["errorCode"] ?? -1) !== 0) { exit(1); }
+exit(strpos(json_encode($args["messages"] ?? []), "TurnKey v19 operator response") !== false ? 0 : 1);
+' "$response"
+
 test "$(mariadb --batch --skip-column-names mibew --execute \
-    "SELECT COUNT(*) FROM message WHERE threadid=$thread_id AND tmessage='TurnKey v19 support request'")" = 1
+    "SELECT COUNT(*) FROM message WHERE threadid=$thread_id AND tmessage='TurnKey v19 visitor message'")" = 1
+test "$(mariadb --batch --skip-column-names mibew --execute \
+    "SELECT COUNT(*) FROM message WHERE threadid=$thread_id AND tmessage='TurnKey v19 operator response'")" = 1
 curl --insecure --fail --silent --show-error \
     --cookie "$operator_cookie" "$base/operator/history/thread/$thread_id" >"$page"
 grep -Fq 'TurnKey Visitor' "$page"
-grep -Fq 'TurnKey v19 support request' "$page"
+grep -Fq 'TurnKey v19 visitor message' "$page"
+grep -Fq 'TurnKey v19 operator response' "$page"
 
 password_hash=$(mariadb --batch --skip-column-names mibew --execute \
     "SELECT vcpassword FROM operator WHERE vclogin='admin'")
@@ -104,7 +170,7 @@ grep -Rqs '^Suites: trixie' /etc/apt/sources.list.d
 cat >"$result" <<EOF
 package_source=Debian 13 Trixie PHP, MariaDB and Apache packages; official Mibew 3.6.0 release archive
 installed_version=Mibew 3.6.0; PHP $(php -r 'echo PHP_VERSION;')
-runtime_checks=normal init; Apache TLS; firstboot administrator web login; visitor support request through Mibew API; authenticated history read; MariaDB persistence; Webmin and local Postfix
+runtime_checks=normal init; Apache TLS; firstboot administrator web login; live visitor chat accepted and answered by the operator; visitor response readback; authenticated history read; MariaDB persistence; Webmin and local Postfix
 updater_command=back up the database, configs/config.yml and files/avatar; replace application files from a reviewed official release; restore retained data; visit /update/ for database migrations
 updater_result=official latest release endpoint returned $latest_tag
 updater_channel=official Mibew releases and documented built-in database migration tool
