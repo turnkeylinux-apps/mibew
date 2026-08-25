@@ -12,13 +12,16 @@ and on top of that:
 - Mibew configurations:
    
    - Installed from upstream source code to /var/www/mibew.
+   - Mibew 3.6.0 is installed from the official release archive with its
+     upstream-published SHA-256 checksum.
    - Includes TurnKey Web Control panel (`http://YOUR_SERVER/cp`) with
      embedded chat button for testing, and links to useful references
      (convenience).
 
-     **Security note**: Updates to Mibew may require supervision so
-     they **ARE NOT** configured to install automatically. See `Mibew
-     documentation`_ for upgrading.
+     **Security note**: Mibew updates require supervision and are not
+     installed automatically. Back up the database, configuration and avatar
+     files, replace the application from a reviewed official release, then
+     run Mibew's ``/update/`` database migration. See `Mibew documentation`_.
 
 - SSL support out of the box.
 - `Adminer`_ administration frontend for MySQL (listening on port

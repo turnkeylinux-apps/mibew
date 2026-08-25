@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
 DB_NAME=mibew
 DB_USER=mibew
@@ -11,24 +11,30 @@ SRC=/usr/local/src
 WEBROOT=/var/www/mibew
 
 # unpack and set permissions
-mkdir -p $(dirname $WEBROOT)
-unzip $SRC/mibew*.zip -d $(dirname $WEBROOT)
-rm $SRC/mibew*.zip
-chown -R root:root $WEBROOT
-chown -R www-data:www-data $WEBROOT/files/avatar
-chown -R www-data:www-data $WEBROOT/cache
+mkdir -p "$(dirname "$WEBROOT")"
+unzip "$SRC/mibew.zip" -d "$(dirname "$WEBROOT")"
+rm "$SRC/mibew.zip"
+chown -R root:root "$WEBROOT"
+chown -R www-data:www-data "$WEBROOT/files/avatar" "$WEBROOT/cache"
+
+# Mibew uses 0 for an ungrouped thread, while its schema represents an absent
+# group with NULL. Current MariaDB enforces the declared foreign key.
+THREAD_CLASS="$WEBROOT/libs/classes/Mibew/Thread.php"
+test "$(grep -Fc "':group_id' => \$this->groupId," "$THREAD_CLASS")" -eq 2
+sed -i "s/':group_id' => \$this->groupId,/':group_id' => \$this->groupId ?: null,/" \
+    "$THREAD_CLASS"
 
 # remove unrequired webcp icons (all except those named)
 cd /var/www/images
 find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
 
 # setup tkl-webcp
-mkdir -p $WEBROOT/cp
-mv /var/www/index.php $WEBROOT/cp
-mv /var/www/js $WEBROOT/cp
-mv /var/www/css $WEBROOT/cp
-mv /var/www/images $WEBROOT/cp
-ln -s $WEBROOT/cp $WEBROOT/test
+mkdir -p "$WEBROOT/cp"
+mv /var/www/index.php "$WEBROOT/cp"
+mv /var/www/js "$WEBROOT/cp"
+mv /var/www/css "$WEBROOT/cp"
+mv /var/www/images "$WEBROOT/cp"
+ln -s "$WEBROOT/cp" "$WEBROOT/test"
 
 # configure apache
 a2dissite 000-default
@@ -37,20 +43,20 @@ a2ensite mibew
 a2enmod rewrite
 
 # start services
-service mysql start
+service mariadb start
 service apache2 start
 
 # setup the database
-MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
-MYSQL_ADMIN="mysqladmin --user=root --password=$MYSQL_PASS"
+mariadb --user=root --password="$MYSQL_PASS" --batch --execute \
+    "CREATE DATABASE $DB_NAME CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+     CREATE USER '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS';
+     GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_USER'@'localhost';
+     FLUSH PRIVILEGES;"
 
-$MYSQL_ADMIN create $DB_NAME
-$MYSQL_BATCH --execute "grant all privileges on $DB_NAME.* to $DB_USER@localhost identified by '$DB_PASS'; flush privileges;"
-
-cp $WEBROOT/configs/default_config.yml $WEBROOT/configs/config.yml
+cp "$WEBROOT/configs/default_config.yml" "$WEBROOT/configs/config.yml"
 
 # preseed configuration
-CONF=$WEBROOT/configs/config.yml
+CONF="$WEBROOT/configs/config.yml"
 
 sed -i "0,/host: \".*/s//host: \"localhost\"/" $CONF
 sed -i "0,/db: \".*/s//db: \"$DB_NAME\"/" $CONF
@@ -59,7 +65,7 @@ sed -i "0,/pass: \".*/s//pass: \"$DB_PASS\"/" $CONF
 
 # curl based install
 URL="http://127.0.0.1/install"
-CURL="curl -c /tmp/cookie -b /tmp/cookie"
+CURL="curl --fail --silent --show-error -c /tmp/cookie -b /tmp/cookie"
 
 $CURL "${URL}"
 $CURL "${URL}/check-requirements"
@@ -72,12 +78,12 @@ $CURL "${URL}/done"
 $CURL "http://127.0.0.1/operator/logout"
 
 rm -f /tmp/cookie
-rm -rf $WEBROOT/install.php
+rm -f "$WEBROOT/install.php"
 
 # secure sensitive files
-chown www-data:www-data $WEBROOT/configs/config.yml
-chmod 640 $WEBROOT/configs/config.yml
+chown www-data:www-data "$WEBROOT/configs/config.yml"
+chmod 640 "$WEBROOT/configs/config.yml"
 
 # stop services
-service mysql stop
+service mariadb stop
 service apache2 stop

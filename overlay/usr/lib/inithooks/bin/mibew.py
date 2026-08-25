@@ -42,8 +42,10 @@ def main():
             "Mibew Password",
             "Enter new password for the Mibew 'admin' account.")
 
-    subprocess.run(['/usr/lib/inithooks/bin/eddit_mibew_pass.sh', '-p', password])
+    subprocess.run(
+        ['/usr/lib/inithooks/bin/eddit_mibew_pass.sh', '-p', password],
+        check=True,
+    )
 
 if __name__ == "__main__":
     main()
-

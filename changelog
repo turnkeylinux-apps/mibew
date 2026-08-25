@@ -1,3 +1,18 @@
+turnkey-mibew-19.0 (1) turnkey; urgency=low
+
+  * Rebuild on Debian 13 (Trixie) with PHP 8.4 and MariaDB 11.8.
+
+  * Install Mibew 3.6.0 from its official release archive and verify the
+    upstream-published SHA-256 digest.
+
+  * Update the database bootstrap for current MariaDB and retain Mibew's
+    supervised upstream update path.
+
+  * Store ungrouped support threads as SQL NULL so MariaDB can enforce Mibew's
+    declared group foreign key.
+
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Tue, 25 Aug 2026 11:20:00 +0000
+
 turnkey-mibew-18.0 (1) turnkey; urgency=low
 
   * Updated Mibew to latest upstream - 3.6.0.
@@ -283,4 +298,3 @@ turnkey-mibew-12.0 (1) turnkey; urgency=low
     appliances. Here we only describe changes specific to this appliance.
 
  -- Alon Swartz <alon@turnkeylinux.org>  Wed, 01 Aug 2012 08:00:00 +0200
-

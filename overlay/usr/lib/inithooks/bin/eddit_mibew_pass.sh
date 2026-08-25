@@ -8,11 +8,15 @@ while getopts p: option
     esac
 done
 
-EDDIT_PASS="/var/www/mibew/eddit_pass.php"
-cp /var/www/mibew/index.php  $EDDIT_PASS
+WEBROOT=/var/www/mibew
 
-PASS_CODE="\$admin = operator_by_login('admin');\$admin['vcpassword'] = calculate_password_hash('admin', '$PASSWORD');update_operator(\$admin);"
-echo $PASS_CODE >> $EDDIT_PASS
-
-/usr/bin/php $EDDIT_PASS
-rm $EDDIT_PASS
+/usr/bin/php -r '
+require_once $argv[1] . "/libs/init.php";
+$admin = operator_by_login("admin");
+if (!$admin) {
+    fwrite(STDERR, "Mibew admin operator was not found\n");
+    exit(1);
+}
+$admin["vcpassword"] = calculate_password_hash("admin", $argv[2]);
+update_operator($admin);
+' "$WEBROOT" "$PASSWORD"
