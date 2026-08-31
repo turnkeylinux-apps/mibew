@@ -1,15 +1,15 @@
-#!/bin/bash -ex
+#!/bin/sh -e
 
+VERSION=3.6.0
+URL="https://download.mibew.org/mibew/core/${VERSION}/mibew-${VERSION}.zip"
+SHA256=8dcba849dfefa323919331f322d5f84b8da8a140b818b85b8356657e90d0d4ba
+DEST=/usr/local/src/mibew.zip
 
-dl() {
-    [ "$FAB_HTTP_PROXY" ] && PROXY="--proxy $FAB_HTTP_PROXY"
-    cd $2; curl -L -f -O $PROXY $1; cd -
-}
+if [ -n "$FAB_HTTP_PROXY" ]; then
+    curl --fail --location --show-error --proxy "$FAB_HTTP_PROXY" \
+        --output "$DEST" "$URL"
+else
+    curl --fail --location --show-error --output "$DEST" "$URL"
+fi
 
-RELEASES=$(gh_releases Mibew/mibew)
-VER=$(echo "${RELEASES}" | sort --version-sort | tail -1)
-VERSION="${VER#v}"
-
-URL="http://downloads.sourceforge.net/project/mibew/core/${VERSION}/mibew-${VERSION}.zip"
-
-dl $URL /usr/local/src
+echo "$SHA256  $DEST" | sha256sum --check --strict -
